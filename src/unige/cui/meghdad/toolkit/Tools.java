@@ -17,26 +17,13 @@
 package unige.cui.meghdad.toolkit;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.lang.instrument.Instrumentation;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,10 +36,6 @@ import java.util.regex.Pattern;
  *
  */
 public class Tools {
-
-
-    //==========================================================================
-    //==========================================================================
     /**
      * This method can be used in the following cases: when an ngram has
      * different POS tags, the method returns the tag combination with the highest
@@ -65,8 +48,6 @@ public class Tools {
      * @return Map of ngrams tagged with their most frequent POS tag and maximum
      * frequency.
      */
-    //==========================================================================
-    //==========================================================================
     public HashMap MostFrequentPosTagNgram(HashMap<String, Integer> input) {
 
         System.out.println();
@@ -172,8 +153,6 @@ public class Tools {
      * @param input HashMap<String, Integer>: asphalt_nn emulsions_nns 2
      * @return HashMap<String, Integer>: asphalt emulsions 2
      */
-    //============================================================================
-    //============================================================================
     public HashMap MergePosTags(HashMap<String, Integer> input) {
 
         //output
@@ -195,9 +174,6 @@ public class Tools {
         }
         return outMap;
     }
-
-    //============================================================================
-    //============================================================================
     /**
      * This method can be used to extract the lexicon (unigrams) from corpus. If
      * the corpus that the program receives as input is not pos tagged, a flag
@@ -213,21 +189,10 @@ public class Tools {
      * @return list containing plain and pos tagged (if available) lexicons. For
      * each entry of the lexicon frequency is also returned.
      */
-    //============================================================================
-    //============================================================================
     public List<HashMap<String, Integer>> ExtractUnigram(String p2corpus, int lexFreqThreshold, boolean isPosTagged, boolean ignoreCase) throws UnsupportedEncodingException, FileNotFoundException, IOException {
 
-//        System.out.println();
-//        System.out.println("ExtractUnigram()");
-//        System.out.println();
-        int freqThreshold = lexFreqThreshold;
 
-        if (isPosTagged) {
-//            System.out.println("Corpus format: POS Tagged");
-        } else if (!isPosTagged) {
-//            System.out.println("Corpus format: Plain Text");
-        }
-//        System.out.println("Frequency threshold: " + freqThreshold);
+        int freqThreshold = lexFreqThreshold;
 
         HashMap<String, Integer> allNgs = new HashMap();
         HashMap<String, Integer> allNgsPos = new HashMap();
@@ -244,15 +209,15 @@ public class Tools {
 
 //        System.out.println("Creating the lexicon (with word counts)...");
         //if the input corpsu is pos tagged (default)
-        
-        
-        
+
+
+
         if (isPosTagged) {
             String sentence="";
             int c = 0;
             String[] words_pos;
             int tmp = 0;
-            
+
             while ((sentence = corpus.readLine()) != null) {
                 if (ignoreCase) {
                     sentence = sentence.toLowerCase();
@@ -266,7 +231,6 @@ public class Tools {
 
                 words_pos = sentence.split(" ");
                 for (String wp : words_pos) {
-
                     //HashMap with POS tags
                     if (!allNgsPos.containsKey(wp)) {
                         allNgsPos.put(wp, 1);
@@ -343,6 +307,10 @@ public class Tools {
         return ret;
     }
 
+
+
+
+
     /**
      *
      * Extract the list of n-grams from (pos-tagged) corpus. Generates either
@@ -383,9 +351,9 @@ public class Tools {
                         new FileInputStream(p2corpus), "UTF8"));
 
         /*
-        while can iterate very many times because the number of lines can get really 
-        huge. Therefore, as much as possible, I declare all variables used inside the 
-        loop outside the loop. 
+        while can iterate very many times because the number of lines can get really
+        huge. Therefore, as much as possible, I declare all variables used inside the
+        loop outside the loop.
         */
         String sentence;
         int c = 0;
@@ -408,15 +376,15 @@ public class Tools {
             //}
             //more memory efficient approach to extract n-grams from sentence
             unigrams = sentence.split(" ");
-            if (unigrams.length >= 100) {
-                System.out.println(" long sentence (length >= 100 words) detected at line: "+c);
+            if (unigrams.length >= 300) {
+                System.out.println(" long sentence (length >= 300 words) detected at line: "+c);
             }
-            
-            
+
+
             //extract all n-grams from sentence:
             for (int i = 0; i < unigrams.length - order + 1; i++) {
 
-                
+
                 for (int j = i; j < i + order; j++) {
                     ngStr.append(j > i ? " " : "").append(unigrams[j]); //changed this from + to chain of append
                 }
@@ -427,9 +395,10 @@ public class Tools {
                 }
             }
 
-            
+
             //transform the list of all n-grams to HashMap of n-grams and their count
             for (String ngram : ngs) {
+
 
                 if (!allNgs.containsKey(ngram)) {
                     allNgs.put(ngram, 1);
@@ -442,7 +411,7 @@ public class Tools {
             c++;
             if ((c % 1000000) == 0) {
 
-                
+
                 System.out.println("Processing Line: " + c);
 
                 //long estimatedTime = System.nanoTime() - start;
@@ -451,7 +420,7 @@ public class Tools {
                 //System.gc();
             }
         }
-        
+
         Pattern p = Pattern.compile("(\\w+)_\\w+\\s(\\w+)_\\w+");
 
         if (outputPosTagged && isCorpusPosTagged) {
@@ -491,8 +460,9 @@ public class Tools {
 
     }
 
-    //============================================================================
-    //============================================================================
+
+
+
     /**
      * The following method extracts noun compounds from the corpus. It is
      * possible for this method to extract other syntactic patterns such as:
@@ -508,8 +478,6 @@ public class Tools {
      *
      * @return Map of compounds (or other word sequences) and their frequencies.
      */
-    //============================================================================
-    //============================================================================
     public HashMap extractNCs(String p2corpus, String SyntacticPattern, boolean igCase, boolean withPOS, int freqThreshold) throws FileNotFoundException, IOException {
 
 
